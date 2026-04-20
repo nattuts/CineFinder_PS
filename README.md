@@ -144,41 +144,15 @@ Diferente de sistemas muito complexos como a Amazon Prime, que possuem um vasto 
 
 ## 4. Estrutura do Projeto
 
-cinefinder-webII/
-│
-├── cmd/
-│   └── api/
-│       └── main.go          
-│
-├── internal/
-│   ├── handler/             
-│   │   ├── auth_handler.go
-│   │   ├── movie_handler.go
-│   │
-│   ├── service/             
-│   │   ├── auth_service.go
-│   │   ├── movie_service.go
-│   │
-│   ├── repository/          
-│   │   ├── movie_repository.go
-│   │   ├── user_repository.go
-│   │
-│   ├── db/                  
-│   │   ├── queries/
-│   │   │   ├── movie.sql
-│   │   │   ├── user.sql
-│   │   │
-│   │
-│   ├── model/               
-│   │   ├── movie.go
-│   │   ├── user.go
-│   │
-│   └── middleware/
-│       ├── auth.go
-│       └── logger.go
-│
-├── go.mod
-└── README.md
+## 📦 Estrutura do Projeto
+
+- `cmd/api` → ponto de entrada da aplicação  
+- `internal/handler` → camada HTTP (rotas)  
+- `internal/service` → regras de negócio  
+- `internal/repository` → acesso a dados  
+- `internal/db` → queries e integração com banco  
+- `internal/model` → structs do domínio  
+- `internal/middleware` → middlewares HTTP  
 
 ## 5. Link do Projeto escrito e vídeo
 
