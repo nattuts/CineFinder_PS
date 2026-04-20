@@ -2,10 +2,18 @@ package service
 
 import (
 	"context"
+
 	"cinefinder/internal/model"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// Interface (IMPORTANTE para testes)
+type MovieServiceInterface interface {
+	Create(movie model.Movie) (*model.Movie, error)
+}
+
+// Implementação real
 type MovieService struct {
 	db *pgxpool.Pool
 }
