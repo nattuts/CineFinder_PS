@@ -5,6 +5,7 @@ import (
 	"cinefinder/internal/handler"
 	"cinefinder/internal/service"
 	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
@@ -30,6 +31,7 @@ func main() {
 	// router
 	r := chi.NewRouter()
 	r.Post("/movies", movieHandler.Create)
+	r.Get("/movies", movieHandler.List)
 
 	// subir servidor
 	println("Servidor rodando em http://localhost:3000 🚀")
