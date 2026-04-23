@@ -3,9 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"cinefinder/internal/model"
 	"cinefinder/internal/service"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type MovieHandler struct {
@@ -32,4 +35,31 @@ func (h *MovieHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(createdMovie)
+}
+func (h *MovieHandler) List(w http.ResponseWriter, r *http.Request) {
+	movies, err := h.service.List()
+	if err != nil {
+		http.Error(w, "Erro ao buscar filmes", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(movies)
+}
+
+func (h *MovieHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	movie, err := h.service.GetByID(id)
+	if err != nil {
+		http.Error(w, "Filme não encontrado", http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(movie)
 }
