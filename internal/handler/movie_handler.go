@@ -29,7 +29,7 @@ func (h *MovieHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	createdMovie, err := h.service.Create(movie)
 	if err != nil {
-		http.Error(w, "Erro ao salvar filme", http.StatusInternalServerError)
+		http.Error(w, "Erro ao salvar filme: " + err.Error(), http.StatusInternalServerError)
 		return
 	}
 

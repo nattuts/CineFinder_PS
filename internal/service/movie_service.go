@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"cinefinder/internal/model"
 
@@ -25,13 +26,26 @@ func NewMovieService(db *pgxpool.Pool) *MovieService {
 }
 
 func (s *MovieService) Create(movie model.Movie) (*model.Movie, error) {
+	var movieCount int
+	
+	checkQuery := "SELECT COUNT(*) FROM movies WHERE title = $1 AND director = $2 AND year = $3 AND genre = $4"
+	
+	err := s.db.QueryRow(context.Background(), checkQuery, movie.Title, movie.Director, movie.Year, movie.Genre).Scan(&movieCount)
+	if err != nil {
+		return nil, err
+	}
+	
+	if movieCount > 0 {
+		return nil, errors.New("Filme já cadastrado")
+	}
+	
 	query := `
-	INSERT INTO movies (title, director, year, genre)
-	VALUES ($1, $2, $3, $4)
+	INSERT INTO movies (title, director, year, genre, available)
+	VALUES ($1, $2, $3, $4, true)
 	RETURNING id;
 	`
 
-	err := s.db.QueryRow(context.Background(), query,
+	err = s.db.QueryRow(context.Background(), query,
 		movie.Title,
 		movie.Director,
 		movie.Year,
