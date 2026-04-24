@@ -85,3 +85,18 @@ func (m *mockMovieService) GetByID(id int) (*model.Movie, error) {
 		Genre:    "Sci-Fi",
 	}, nil
 }
+
+func (m *mockMovieService) Search(query string) ([]model.Movie, error) {
+	if query == "" {
+		return []model.Movie{}, nil
+	}
+	return []model.Movie{
+		{
+			ID:       1,
+			Title:    "Matrix",
+			Director: "Wachowski",
+			Year:     1999,
+			Genre:    "Sci-Fi",
+		},
+	}, nil
+}

@@ -44,6 +44,7 @@ func main() {
 
 	r.Post("/movies", movieHandler.Create)
 	r.Get("/movies", movieHandler.List)
+	r.Get("/movies/search", movieHandler.Search)
 	r.Get("/movies/{id}", movieHandler.GetByID)
 
 	r.Post("/loans", loanHandler.Create)
