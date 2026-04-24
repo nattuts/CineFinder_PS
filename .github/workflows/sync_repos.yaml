@@ -1,0 +1,18 @@
+name: Sync Repositories
+
+on:
+  push:
+    branches:
+      - main # Define qual branch irá disparar a sincronização
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sincronizar código
+        uses: wei/git-sync@v3
+        with:
+          source_repo: "nandosannn/cinefinder-webII"
+          source_branch: "main"
+          destination_repo: "https://${{ secrets.DESTINATION_TOKEN }}@github.com/nattuts/CineFinder_PS"
+          destination_branch: "main"
