@@ -167,8 +167,13 @@ Antes de começar, você precisa ter instalado:
 #### Clonar o repositório
 
 ```
+**Para a disciplina de Web II**
 git clone git@github.com:nandosannn/cinefinder-webII.git
 cd cinefinder-webII
+
+**Para a disciplina de Processos de Software**
+git clone https://github.com/nattuts/CineFinder_PS.git
+cd CineFinder_PS
 ```
 
 #### Instalar dependências
