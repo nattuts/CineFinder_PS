@@ -14,6 +14,7 @@ type MovieServiceInterface interface {
 	Create(movie model.Movie) (*model.Movie, error)
 	List() ([]model.Movie, error)
 	GetByID(id int) (*model.Movie, error)
+	Search(query string) ([]model.Movie, error)
 }
 
 // Implementação real
@@ -98,4 +99,26 @@ func (s *MovieService) GetByID(id int) (*model.Movie, error) {
 	}
 
 	return &m, nil
+}
+
+func (s *MovieService) Search(query string) ([]model.Movie, error) {
+	sqlQuery := "SELECT id, title, director, year, genre FROM movies WHERE title ILIKE '%' || $1 || '%'"
+
+	rows, err := s.db.Query(context.Background(), sqlQuery, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	movies := []model.Movie{}
+	for rows.Next() {
+		var m model.Movie
+		err := rows.Scan(&m.ID, &m.Title, &m.Director, &m.Year, &m.Genre)
+		if err != nil {
+			return nil, err
+		}
+		movies = append(movies, m)
+	}
+
+	return movies, nil
 }
