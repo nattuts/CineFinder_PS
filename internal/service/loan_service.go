@@ -41,18 +41,17 @@ func (s *LoanService) Create(loan model.Loan) (*model.Loan, error) {
 
 	query := `
 	INSERT INTO loans (user_id, movie_id, loan_date, return_date, price, returned)
-	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING id, price, returned;
+	VALUES ($1, $2, NOW(), $3::timestamptz, $4, $5)
+	RETURNING id, loan_date, price, returned;
 	`
 
 	err = s.db.QueryRow(context.Background(), query,
 		loan.User.ID,
 		loan.Movie.ID,
-		loan.LoanDate,
 		loan.ReturnDate,
 		loan.Price,
 		loan.Returned,
-	).Scan(&loan.ID, &loan.Price, &loan.Returned)
+	).Scan(&loan.ID, &loan.LoanDate, &loan.Price, &loan.Returned)
 
 	if err != nil {
 		return nil, err

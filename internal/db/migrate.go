@@ -15,8 +15,9 @@ func RunMigrations(pool *pgxpool.Pool) {
 		director TEXT NOT NULL,
 		year INT NOT NULL,
 		genre TEXT NOT NULL,
-		created_at TIMESTAMP DEFAULT NOW()
-	);
+		created_at TIMESTAMP DEFAULT NOW(),
+		available BOOLEAN DEFAULT true
+		);
 	`
 
 	_, err := pool.Exec(context.Background(), query)
