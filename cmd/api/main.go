@@ -23,11 +23,13 @@ func main() {
 	dbPool := db.NewDB()
 	defer dbPool.Close()
 
+	// criar queries do sqlc
 	queries := database.New(dbPool)
 
 	// criar tabela
 	db.RunMigrations(dbPool)
 
+	// service + handler
 	movieService := service.NewMovieService(queries)
 	movieHandler := handler.NewMovieHandler(movieService)
 
@@ -48,7 +50,7 @@ func main() {
 		w.Write([]byte(`{"status": "ok", "message": "Cinefinder API is running 🚀"}`))
 	})
 
-	r.Get("/movies/search", movieHandler.Search) 
+  r.Get("/movies/search", movieHandler.Search)
 	r.Post("/users", userHandler.Create)
 	r.Post("/login", loginHandler)
 
@@ -72,7 +74,7 @@ func main() {
 	})
 
 	// subir servidor
-	println("Servidor rodando em http://localhost:3000 🚀")
+	println("Servidor rodando em http://localhost:3000")
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		println("Erro ao iniciar servidor:", err.Error())
 	}
