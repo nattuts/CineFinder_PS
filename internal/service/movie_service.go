@@ -125,9 +125,6 @@ func (s *MovieService) Delete(id int) error {
 	return s.queries.DeleteMovie(context.Background(), int32(id))
 }
 
-func (s *MovieService) Delete(id int) error {
-	return s.queries.DeleteMovie(context.Background(), int32(id))
-}
 
 func (s *MovieService) Search(query string) ([]model.Movie, error) {
 	dbMovies, err := s.queries.ListMovies(context.Background())
