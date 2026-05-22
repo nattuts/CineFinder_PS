@@ -29,13 +29,14 @@ func (h *MovieHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	createdMovie, err := h.service.Create(movie)
 	if err != nil {
-		http.Error(w, "Erro ao salvar filme: " + err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Erro ao salvar filme: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(createdMovie)
 }
+
 func (h *MovieHandler) List(w http.ResponseWriter, r *http.Request) {
 	movies, err := h.service.List()
 	if err != nil {
@@ -62,6 +63,51 @@ func (h *MovieHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(movie)
+}
+
+func (h *MovieHandler) Update(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	var movie model.Movie
+
+	err = json.NewDecoder(r.Body).Decode(&movie)
+	if err != nil {
+		http.Error(w, "JSON inválido", http.StatusBadRequest)
+		return
+	}
+
+	updatedMovie, err := h.service.Update(id, movie)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedMovie)
+}
+
+func (h *MovieHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	err = h.service.Delete(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *MovieHandler) Search(w http.ResponseWriter, r *http.Request) {

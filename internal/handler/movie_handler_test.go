@@ -10,12 +10,57 @@ import (
 	"cinefinder/internal/model"
 )
 
-// Mock do service
 type mockMovieService struct{}
 
 func (m *mockMovieService) Create(movie model.Movie) (*model.Movie, error) {
 	movie.ID = 1
 	return &movie, nil
+}
+
+func (m *mockMovieService) List() ([]model.Movie, error) {
+	return []model.Movie{
+		{
+			ID:       1,
+			Title:    "Matrix",
+			Director: "Wachowski",
+			Year:     1999,
+			Genre:    "Sci-Fi",
+		},
+	}, nil
+}
+
+func (m *mockMovieService) GetByID(id int) (*model.Movie, error) {
+	return &model.Movie{
+		ID:       id,
+		Title:    "Matrix",
+		Director: "Wachowski",
+		Year:     1999,
+		Genre:    "Sci-Fi",
+	}, nil
+}
+
+func (m *mockMovieService) Update(id int, movie model.Movie) (*model.Movie, error) {
+	movie.ID = id
+	return &movie, nil
+}
+
+func (m *mockMovieService) Delete(id int) error {
+	return nil
+}
+
+func (m *mockMovieService) Search(query string) ([]model.Movie, error) {
+	if query == "" {
+		return []model.Movie{}, nil
+	}
+	return []model.Movie{
+		{
+			ID:       1,
+			Title:    "Matrix",
+			Director: "Wachowski",
+			Year:     1999,
+			Genre:    "Sci-Fi",
+		},
+	}, nil
 }
 
 func TestCreateMovie_Success(t *testing.T) {
@@ -64,39 +109,4 @@ func TestCreateMovie_InvalidJSON(t *testing.T) {
 	if w.Result().StatusCode != http.StatusBadRequest {
 		t.Errorf("esperado 400, veio %d", w.Result().StatusCode)
 	}
-}
-func (m *mockMovieService) List() ([]model.Movie, error) {
-	return []model.Movie{
-		{
-			ID:       1,
-			Title:    "Matrix",
-			Director: "Wachowski",
-			Year:     1999,
-			Genre:    "Sci-Fi",
-		},
-	}, nil
-}
-func (m *mockMovieService) GetByID(id int) (*model.Movie, error) {
-	return &model.Movie{
-		ID:       id,
-		Title:    "Matrix",
-		Director: "Wachowski",
-		Year:     1999,
-		Genre:    "Sci-Fi",
-	}, nil
-}
-
-func (m *mockMovieService) Search(query string) ([]model.Movie, error) {
-	if query == "" {
-		return []model.Movie{}, nil
-	}
-	return []model.Movie{
-		{
-			ID:       1,
-			Title:    "Matrix",
-			Director: "Wachowski",
-			Year:     1999,
-			Genre:    "Sci-Fi",
-		},
-	}, nil
 }

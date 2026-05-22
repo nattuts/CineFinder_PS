@@ -1,17 +1,19 @@
 package main
 
 import (
+	"net/http"
+
+	"cinefinder/internal/database"
 	"cinefinder/internal/db"
 	"cinefinder/internal/handler"
+	"cinefinder/internal/middleware"
 	"cinefinder/internal/service"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-
 	// carregar .env
 	if err := godotenv.Load(); err != nil {
 		println("Aviso: .env não carregado")
@@ -21,11 +23,12 @@ func main() {
 	dbPool := db.NewDB()
 	defer dbPool.Close()
 
+	queries := database.New(dbPool)
+
 	// criar tabela
 	db.RunMigrations(dbPool)
 
-	// service + handler
-	movieService := service.NewMovieService(dbPool)
+	movieService := service.NewMovieService(queries)
 	movieHandler := handler.NewMovieHandler(movieService)
 
 	loanService := service.NewLoanService(dbPool)
@@ -33,6 +36,9 @@ func main() {
 
 	userService := service.NewUserService(dbPool)
 	userHandler := handler.NewUserHandler(userService)
+
+	authService := &service.AuthService{}
+	loginHandler := handler.LoginHandler(authService, userService)
 
 	// router
 	r := chi.NewRouter()
@@ -42,20 +48,32 @@ func main() {
 		w.Write([]byte(`{"status": "ok", "message": "Cinefinder API is running 🚀"}`))
 	})
 
-	r.Post("/movies", movieHandler.Create)
-	r.Get("/movies", movieHandler.List)
-	r.Get("/movies/search", movieHandler.Search)
-	r.Get("/movies/{id}", movieHandler.GetByID)
-
-	r.Post("/loans", loanHandler.Create)
-	r.Get("/loans", loanHandler.List)
-	r.Get("/loans/{id}", loanHandler.GetByID)
-
+	r.Get("/movies/search", movieHandler.Search) 
 	r.Post("/users", userHandler.Create)
-	r.Get("/users", userHandler.List)
-	r.Get("/users/{id}", userHandler.GetByID)
+	r.Post("/login", loginHandler)
+
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.AuthMiddleware)
+
+		r.Post("/movies", movieHandler.Create)
+		r.Get("/movies", movieHandler.List)
+		r.Get("/movies/{id}", movieHandler.GetByID)
+
+		r.Post("/loans", loanHandler.Create)
+		r.Get("/loans", loanHandler.List)
+		r.Get("/loans/history", loanHandler.History)
+		r.Get("/loans/{id}", loanHandler.GetByID)
+		r.Put("/loans/{id}/return", loanHandler.ReturnMovie)
+
+		r.Get("/users", userHandler.List)
+		r.Get("/users/{id}", userHandler.GetByID)
+		r.Put("/movies/{id}", movieHandler.Update)
+		r.Delete("/movies/{id}", movieHandler.Delete)
+	})
 
 	// subir servidor
 	println("Servidor rodando em http://localhost:3000 🚀")
-	http.ListenAndServe(":3000", r)
+	if err := http.ListenAndServe(":3000", r); err != nil {
+		println("Erro ao iniciar servidor:", err.Error())
+	}
 }
