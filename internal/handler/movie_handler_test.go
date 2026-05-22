@@ -110,31 +110,3 @@ func TestCreateMovie_InvalidJSON(t *testing.T) {
 		t.Errorf("esperado 400, veio %d", w.Result().StatusCode)
 	}
 }
-func (m *mockMovieService) List() ([]model.Movie, error) {
-	return []model.Movie{
-		{
-			ID:       1,
-			Title:    "Matrix",
-			Director: "Wachowski",
-			Year:     1999,
-			Genre:    "Sci-Fi",
-		},
-	}, nil
-}
-func (m *mockMovieService) GetByID(id int) (*model.Movie, error) {
-	return &model.Movie{
-		ID:       id,
-		Title:    "Matrix",
-		Director: "Wachowski",
-		Year:     1999,
-		Genre:    "Sci-Fi",
-	}, nil
-}
-func (m *mockMovieService) Update(id int, movie model.Movie) (*model.Movie, error) {
-	movie.ID = id
-	return &movie, nil
-}
-
-func (m *mockMovieService) Delete(id int) error {
-	return nil
-}
