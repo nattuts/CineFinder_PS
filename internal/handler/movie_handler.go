@@ -36,6 +36,7 @@ func (h *MovieHandler) Create(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(createdMovie)
 }
+
 func (h *MovieHandler) List(w http.ResponseWriter, r *http.Request) {
 	movies, err := h.service.List()
 	if err != nil {
@@ -107,4 +108,20 @@ func (h *MovieHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *MovieHandler) Search(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("search")
+	if query == "" {
+		http.Error(w, "Parâmetro 'search' é obrigatório", http.StatusBadRequest)
+		return
+	}
+
+	movies, err := h.service.Search(query)
+	if err != nil {
+		http.Error(w, "Erro ao buscar filmes", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(movies)
 }

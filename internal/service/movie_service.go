@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"cinefinder/internal/database"
 	"cinefinder/internal/model"
@@ -14,6 +15,7 @@ type MovieServiceInterface interface {
 	GetByID(id int) (*model.Movie, error)
 	Update(id int, movie model.Movie) (*model.Movie, error)
 	Delete(id int) error
+	Search(query string) ([]model.Movie, error)
 }
 
 type MovieService struct {
@@ -125,4 +127,29 @@ func (s *MovieService) Update(id int, movie model.Movie) (*model.Movie, error) {
 
 func (s *MovieService) Delete(id int) error {
 	return s.queries.DeleteMovie(context.Background(), int32(id))
+}
+
+
+func (s *MovieService) Search(query string) ([]model.Movie, error) {
+	dbMovies, err := s.queries.ListMovies(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	movies := []model.Movie{}
+	
+	for _, m := range dbMovies {
+		if strings.Contains(strings.ToLower(m.Title), strings.ToLower(query)) {
+			movies = append(movies, model.Movie{
+				ID:       int(m.ID),
+				Title:    m.Title,
+				Director: m.Director,
+				Year:     int(m.ReleaseYear),
+				Genre:    m.Genre,
+        Available: int(created.AvailableCopies),
+			})
+		}
+	}
+
+	return movies, nil
 }

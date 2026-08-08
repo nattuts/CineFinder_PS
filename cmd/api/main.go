@@ -52,6 +52,7 @@ func main() {
 		w.Write([]byte(`{"status": "ok", "message": "Cinefinder API is running 🚀"}`))
 	})
 
+  r.Get("/movies/search", movieHandler.Search)
 	r.Post("/users", userHandler.Create)
 	r.Post("/login", handler.LoginHandler(authService, userService))
 	r.Post("/refresh", handler.RefreshHandler(authService, userService))
